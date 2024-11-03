@@ -122,7 +122,8 @@ class AddressBook(UserDict):
             pickle.dump(self, file)
 
     # Function that deserialize file into address book using pickle, by default filename = 'addressbook.pkl'
-    def load_data(self, filename='addressbook.pkl'):
+    @classmethod
+    def load_data(cls, filename='addressbook.pkl'):
         try:
             with open(filename, 'rb') as file:
                 return pickle.load(file)
