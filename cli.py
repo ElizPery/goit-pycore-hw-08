@@ -1,5 +1,6 @@
 from collections import UserDict
 from datetime import datetime
+import pickle
 from re import match
 
 # Common class for fields
@@ -114,6 +115,19 @@ class AddressBook(UserDict):
                 upcoming_birthdays.append({'name': str(info.name), 'congratulation_date': datetime.strftime(upcoming_birthday, '%d.%m.%Y')})
 
         return upcoming_birthdays
+    
+    # Function that serialize address book in file using pickle, by default filename = 'addressbook.pkl'
+    def save_data(self, filename='addressbook.pkl'):
+        with open(filename, 'wb') as file:
+            pickle.dump(self, file)
+
+    # Function that deserialize file into address book using pickle, by default filename = 'addressbook.pkl'
+    def load_data(self, filename='addressbook.pkl'):
+        try:
+            with open(filename, 'rb') as file:
+                return pickle.load(file)
+        except FileNotFoundError:
+            return AddressBook()
 
     def __str__(self):
         return f'{'\n'.join([str(contact) for contact in self.data.values()])}'
@@ -242,7 +256,7 @@ def birthdays(book: AddressBook):
     return f'{'\n'.join([f'Congratulate {birthday['name']} on {birthday['congratulation_date']}' for birthday in birthdays])}'
 
 def main():
-    book = AddressBook()
+    book: AddressBook = AddressBook.load_data()
 
     print('Welcome to the assistance bot!')
 
@@ -251,6 +265,7 @@ def main():
         command, *args = parse_input(user_input)
 
         if command in ['close', 'exit']:
+            book.save_data()
             print('Goodbye!')
             break
         elif command == 'hello':
